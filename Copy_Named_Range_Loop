@@ -1,0 +1,51 @@
+Sub CopyNamedRange_LOOP()
+    Dim MyFile                As String
+    Dim Filepath              As String
+    Dim emptyColumn           As Long
+    Dim emptyRow              As Long
+    Dim wsPaste               As Worksheet
+
+    Filepath = ActiveSheet.Range("A3").Value    'Link to Source Folder (with "\" at the end!)
+    MyFile = Dir(Filepath)
+    
+    Application.DisplayAlerts = False
+
+    Set wsPaste = ActiveSheet   'Link to destination
+    
+    With wsPaste
+        emptyRow = .Cells(.Rows.Count, 2).End(xlUp).Offset(1, 0).Row    'defines empty row for pasting
+        emptyColumn = .Cells(emptyRow, .Columns.Count).End(xlToLeft).Offset(0, 1).Column    'defines empty column for pasting
+    End With
+    Do While Len(MyFile) > 0
+        If emptyColumn > 1 Then
+            emptyColumn = 2     'Resets column to 2 after all data from one file is pasted
+        End If
+
+
+        Workbooks.Open (Filepath & MyFile)
+        
+        Worksheets("Sheet2").Range("ContractStartDate").Copy
+        wsPaste.Cells(emptyRow, emptyColumn).PasteSpecial xlPasteValuesAndNumberFormats
+        emptyColumn = emptyColumn + 1
+        
+        Worksheets("Sheet2").Range("EmployeeFirstName").Copy
+        wsPaste.Cells(emptyRow, emptyColumn).PasteSpecial xlPasteValuesAndNumberFormats
+        emptyColumn = emptyColumn + 1
+        
+        Worksheets("Sheet2").Range("EmployeeLastName").Copy
+        wsPaste.Cells(emptyRow, emptyColumn).PasteSpecial xlPasteValuesAndNumberFormats
+        emptyColumn = emptyColumn + 1
+        
+        Worksheets("Sheet1").Range("MonthlyBaseSalary").Copy
+        wsPaste.Cells(emptyRow, emptyColumn).PasteSpecial xlPasteValuesAndNumberFormats
+        emptyColumn = emptyColumn + 1
+        
+        Worksheets("Sheet1").Range("AnnualBaseSalary").Copy
+        wsPaste.Cells(emptyRow, emptyColumn).PasteSpecial xlPasteValuesAndNumberFormats
+        
+        emptyRow = emptyRow + 1
+        ActiveWorkbook.Close savechanges:=False
+        Application.ScreenUpdating = True
+        MyFile = Dir
+    Loop
+End Sub
